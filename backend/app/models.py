@@ -1,32 +1,37 @@
 from datetime import datetime, timezone
 from sqlmodel import SQLModel, Field
 
-
-class JobPosting(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-
-    # core, always present
+# Shared fields, the common shape. NOT a table.
+class JobPostingBase(SQLModel):
     company: str
     role: str
-    role_category: str | None = None  
     description: str
+    role_category: str | None = None
     status: str = "saved"
-
     location: str | None = None
-    work_mode: str | None = None          # remote / hybrid / onsite
-    source: str | None = None             # LinkedIn, Adzuna, etc.
+    work_mode: str | None = None
+    source: str | None = None
     link: str | None = None
     date_applied: datetime | None = None
     follow_up_date: datetime | None = None
-
-    # your new ideas, good calls
-    years_experience: int | None = None   # filter "<= 3 years"
-
-    # free text, not for filtering
+    years_experience: int | None = None
     contact: str | None = None
     notes: str | None = None
-
-    # AI feature columns (unused for now)
     match_score: int | None = None
 
+
+# The table: base + the DB-only fields
+class JobPosting(JobPostingBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+# Input shape: just the base, nothing added
+class JobPostingCreate(JobPostingBase):
+    pass
+
+
+# Output shape: base + the fields we want to expose back
+class JobPostingRead(JobPostingBase):
+    id: int
+    created_at: datetime
