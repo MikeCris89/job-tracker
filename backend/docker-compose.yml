@@ -12,5 +12,15 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  db-test:
+    image: postgres:16
+    container_name: job-tracker-db-test
+    environment:
+      POSTGRES_USER: jobtracker
+      POSTGRES_PASSWORD: localdevpassword
+      POSTGRES_DB: jobtracker
+    ports:
+      - "5433:5432"
+
 volumes:
   pgdata:
