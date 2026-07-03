@@ -68,5 +68,12 @@ def test_delete_posting(client):
     get_resp = client.get(f"/postings/{post_data["id"]}")
     assert get_resp.status_code == 404
 
+# Keep last 
+def test_rollback(client):
+    resp_data = client.get("/postings").json()
+
+    assert isinstance(resp_data, list)
+    assert len(resp_data) == 0
+
 
 

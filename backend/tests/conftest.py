@@ -9,9 +9,17 @@ TEST_DATABASE_URL = "postgresql://jobtracker:localdevpassword@localhost:5433/job
 
 test_engine = create_engine(TEST_DATABASE_URL)
 
-def get_test_session():
-    with Session(test_engine) as session:
-        yield session
+@pytest.fixture
+def session():
+    connection = test_engine.connect()
+    transaction = connection.begin()
+    session = Session(bind=connection, join_transaction_mode="create_savepoint")
+
+    yield session
+
+    session.close()
+    transaction.rollback()
+    connection.close()
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -21,7 +29,10 @@ def setup_database():
     SQLModel.metadata.drop_all(test_engine)
 
 @pytest.fixture
-def client():
-    app.dependency_overrides[get_session] = get_test_session
+def client(session):
+    def get_session_override():
+        yield session
+
+    app.dependency_overrides[get_session] = get_session_override
     yield TestClient(app)
     app.dependency_overrides.clear()
