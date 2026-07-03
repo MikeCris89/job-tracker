@@ -1,6 +1,6 @@
 from sqlmodel import create_engine, Session, SQLModel
 
-DATABASE_URL = "postgresql://jobtracker:localdevpassword@localhost:5432/jobtracker"
+DATABASE_URL = "postgresql://jobtracker:localdevpassword@db:5432/jobtracker"
 
 engine = create_engine(DATABASE_URL, echo=True)
 
