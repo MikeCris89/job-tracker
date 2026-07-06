@@ -10,10 +10,11 @@ class JobPostingBase(SQLModel):
     company: str
     role: str
     description: str
+    job_type: str | None = None     # full-time, part-time, contract
     role_category: str | None = None
     status: str = "saved"
     location: str | None = None
-    work_mode: str | None = None
+    work_mode: str | None = None    # onsite/remote/hybrid
     source: str | None = None
     link: str | None = None
     date_applied: datetime | None = None
@@ -22,12 +23,19 @@ class JobPostingBase(SQLModel):
     contact: str | None = None
     notes: str | None = None
     match_score: int | None = None
-
+    salary_min: int | None = None
+    salary_max: int | None = None
+    salary_currency: str | None = None
+    salary_period: str | None = None    # annual/hourly
+    raw_posting: str | None = None
+    summary: str | None = None
+   
 # UPDATE WITH BASE
 class JobPostingUpdate(SQLModel):
     company: str | None = None
     role: str | None = None
     description: str | None = None
+    job_type: str | None = None 
     role_category: str | None = None
     status: str | None = None
     location: str | None = None
@@ -40,6 +48,12 @@ class JobPostingUpdate(SQLModel):
     contact: str | None = None
     notes: str | None = None
     match_score: int | None = None
+    salary_min: int | None = None
+    salary_max: int | None = None
+    salary_currency: str | None = None
+    salary_period: str | None = None
+    raw_posting: str | None = None
+    summary: str | None = None
 
 
 # The table: base + the DB-only fields

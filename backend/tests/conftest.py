@@ -5,7 +5,7 @@ from sqlmodel import SQLModel, Session, create_engine
 from app.main import app
 from app.database import get_session
 
-TEST_DATABASE_URL = "postgresql://jobtracker:localdevpassword@localhost:5433/jobtracker_test"
+TEST_DATABASE_URL = "postgresql://jobtracker:localdevpassword@db-test:5432/jobtracker_test"
 
 test_engine = create_engine(TEST_DATABASE_URL)
 
