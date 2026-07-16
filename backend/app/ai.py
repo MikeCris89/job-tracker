@@ -31,9 +31,6 @@ Rules:
 - Use the record_posting tool. Do not reply with prose.
 - Only record what the posting actually states. If a field is not present, leave it null. Never guess or infer.
 - summary: a condensed version of the ENTIRE posting, all information retained, just trimmed. Not a teaser.
-- description: what the company does and what the role's responsibilities are. Exclude the tech stack.
-- skills: concrete technologies, languages, frameworks, and tools only (React, Docker, PostgreSQL). Not soft skills, not "3+ years experience".
-- salary_period: "annual" or "hourly". salary_currency: ISO code (CAD, USD).
 - link: only if a URL appears literally in the text. Do not construct one.
 """
 
