@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from sqlmodel import Relationship, SQLModel, Field
 
 class JobPostingSkillLink(SQLModel, table=True):
@@ -9,9 +9,11 @@ class JobPostingSkillLink(SQLModel, table=True):
 class JobPostingBase(SQLModel):
     company: str
     role: str
+    posting_date: date | None = None
+    applicant_count: int | None = None
     description: str
     job_type: str | None = None     # full-time, part-time, contract
-    role_category: str | None = None
+    role_category: str | None = None    # frontend / backend / full-stack
     status: str = "saved"
     location: str | None = None
     work_mode: str | None = None    # onsite/remote/hybrid
@@ -21,6 +23,7 @@ class JobPostingBase(SQLModel):
     follow_up_date: datetime | None = None
     years_experience: int | None = None
     contact: str | None = None
+    application_instructions: str | None = None
     notes: str | None = None
     match_score: int | None = None
     salary_min: int | None = None
@@ -34,6 +37,8 @@ class JobPostingBase(SQLModel):
 class JobPostingUpdate(SQLModel):
     company: str | None = None
     role: str | None = None
+    posting_date: date | None = None
+    applicant_count: int | None = None
     description: str | None = None
     job_type: str | None = None 
     role_category: str | None = None
@@ -46,6 +51,7 @@ class JobPostingUpdate(SQLModel):
     follow_up_date: datetime | None = None
     years_experience: int | None = None
     contact: str | None = None
+    application_instructions: str | None = None
     notes: str | None = None
     match_score: int | None = None
     salary_min: int | None = None
