@@ -3,7 +3,9 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlmodel import Session, select
 
 from app.models import JobPosting, JobPostingCreate, JobPostingRead, JobPostingUpdate 
-from app.database import create_db_and_tables, get_session 
+from app.database import create_db_and_tables, get_session
+from app.ai import extract_posting
+from app.schemas import IngestRequest, PostingExtraction 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -15,6 +17,10 @@ app = FastAPI(lifespan=lifespan)
 @app.get('/')
 def read_root():
     return {"message": "Job tracker API running."}
+
+@app.post('/postings/ingest', response_model=PostingExtraction)
+def ingest_posting(payload: IngestRequest):
+    return extract_posting(payload.raw_posting)
 
 
 @app.post("/postings", response_model=JobPostingRead)
