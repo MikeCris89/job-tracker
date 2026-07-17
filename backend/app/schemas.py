@@ -42,8 +42,14 @@ class PostingExtraction(SQLModel):
     years_experience: int | None = None
     salary_min: int | None = None
     salary_max: int | None = None
-    salary_currency: str | None = Field(default=None, description="ISO currency code, e.g. CAD, USD.")
-    salary_period: str | None = Field(default=None, description="One of exactly: annual, monthly, weekly, hourly. Use exactly what the posting states, do not convert.")
+    salary_currency: str | None = Field(
+        default=None, 
+        description="ISO currency code, e.g. CAD, USD."
+        )
+    salary_period: str | None = Field(
+        default=None, 
+        description="One of exactly: annual, monthly, weekly, hourly. Use exactly what the posting states, do not convert."
+        )
     source: str | None = Field(
         default=None,
         description=(
@@ -84,7 +90,9 @@ class PostingExtraction(SQLModel):
             "Concrete technologies, languages, frameworks, and tools required or "
             "mentioned. Not soft skills, not years of experience, not methodologies "
             "like Agile. Write each one exactly as its own vendor or project writes "
-            "it: 'TypeScript', 'PostgreSQL', 'AWS', 'C#', '.NET', 'HTML'. If the "
+            "it: 'TypeScript', 'PostgreSQL', 'AWS', 'C#', '.NET', 'HTML'. Never "
+            "include version numbers: 'Next.js 15' -> 'Next.js', 'Python 3.12' -> "
+            "'Python'. If the "
             "posting uses informal shorthand, correct it to the official name."
         ),
     )
