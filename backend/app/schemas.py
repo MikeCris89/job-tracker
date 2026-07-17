@@ -12,11 +12,12 @@ class PostingExtraction(SQLModel):
     description: str | None = Field(
         default=None,
         description=(
-            "What the company does and what the role's responsibilities are. "
-            "Exclude the tech stack. Only state facts the posting explicitly "
-            "provides. If the posting does not say what the company does, omit "
-            "that entirely and describe only the responsibilities. Never infer "
-            "or guess the company's business from its name or product names."
+            "Prose describing the role's responsibilities and duties. Exclude the "
+            "tech stack. Write this whenever the posting describes the role at all. "
+            "If the posting states what the company does, open with one sentence on "
+            "that; if it does not, skip that sentence and write only the "
+            "responsibilities. Do not infer the company's business from its name or "
+            "product names. Null only if the posting says nothing about the role."
         ),
     )
     job_type: str | None = Field(
