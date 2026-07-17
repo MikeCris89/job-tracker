@@ -2,7 +2,7 @@ from datetime import date, datetime, timezone
 from sqlmodel import Relationship, SQLModel, Field
 
 class JobPostingSkillLink(SQLModel, table=True):
-    posting_id: int | None = Field(default=None, foreign_key="jobposting.id" ,primary_key=True, ondelete="CASCADE")
+    posting_id: int | None = Field(default=None, foreign_key="jobposting.id", primary_key=True, ondelete="CASCADE")
     skill_id: int | None = Field(default=None, foreign_key="skill.id", primary_key=True, ondelete="CASCADE")
 
 # Shared fields, the common shape. NOT a table.
@@ -11,7 +11,7 @@ class JobPostingBase(SQLModel):
     role: str
     posting_date: date | None = None
     applicant_count: int | None = None
-    description: str
+    description: str | None = None
     job_type: str | None = None     # full-time, part-time, contract
     role_category: str | None = None    # frontend / backend / full-stack
     status: str = "saved"
@@ -73,12 +73,19 @@ class JobPosting(JobPostingBase, table=True):
 
 # Input shape: just the base, nothing added
 class JobPostingCreate(JobPostingBase):
-    pass
+    skills: list[str] = []
+
+class SkillRead(SQLModel):
+    id: int
+    slug: str
+    name: str
+    in_my_stack: bool
 
 
 # Output shape: base + the fields we want to expose back
 class JobPostingRead(JobPostingBase):
     id: int
+    skills: list[SkillRead] = []
     created_at: datetime
 
 class Skill(SQLModel, table=True):

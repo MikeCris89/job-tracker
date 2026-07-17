@@ -77,3 +77,19 @@ def test_rollback(client):
 
 
 
+def test_create_posting_with_skills(client):
+    payload = {**sample_posting, "skills": ["React", "React.js", "PostgreSQL"]}
+    response = client.post("/postings", json=payload)
+
+    assert response.status_code == 200
+    data = response.json()
+    slugs = {s["slug"] for s in data["skills"]}
+    assert slugs == {"react", "postgresql"}
+
+
+def test_create_posting_without_description(client):
+    payload = {k: v for k, v in sample_posting.items() if k != "description"}
+    response = client.post("/postings", json=payload)
+
+    assert response.status_code == 200
+    assert response.json()["description"] is None

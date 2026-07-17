@@ -5,7 +5,8 @@ from sqlmodel import Session, select
 from app.models import JobPosting, JobPostingCreate, JobPostingRead, JobPostingUpdate 
 from app.database import create_db_and_tables, get_session
 from app.ai import extract_posting
-from app.schemas import IngestRequest, PostingExtraction 
+from app.schemas import IngestRequest, PostingExtraction
+from app.skills import get_or_create_skills 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -18,18 +19,22 @@ app = FastAPI(lifespan=lifespan)
 def read_root():
     return {"message": "Job tracker API running."}
 
-@app.post('/postings/ingest', response_model=PostingExtraction)
-def ingest_posting(payload: IngestRequest):
-    return extract_posting(payload.raw_posting)
+
 
 
 @app.post("/postings", response_model=JobPostingRead)
 def create_posting(posting: JobPostingCreate, session: Session = Depends(get_session)):
-    db_posting = JobPosting.model_validate(posting)
+    db_posting = JobPosting(**posting.model_dump(exclude={"skills"}))
+    db_posting.skills = get_or_create_skills(session, posting.skills)
     session.add(db_posting)
     session.commit()
     session.refresh(db_posting)
     return db_posting
+
+@app.post('/postings/ingest', response_model=PostingExtraction)
+def ingest_posting(payload: IngestRequest):
+    return extract_posting(payload.raw_posting)
+
 
 @app.patch("/postings/{posting_id}", response_model=JobPostingRead)
 def update_posting(posting_id: int, posting_update: JobPostingUpdate, session: Session = Depends(get_session)):
