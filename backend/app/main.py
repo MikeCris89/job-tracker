@@ -1,10 +1,10 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
 from sqlmodel import Session, select
 
-from app.models import JobPosting, JobPostingCreate, JobPostingRead, JobPostingUpdate 
+from app.models import CV, JobPosting, JobPostingCreate, JobPostingRead, JobPostingUpdate 
 from app.database import create_db_and_tables, get_session
-from app.ai import extract_posting
+from app.ai import extract_cv_skills, extract_cv_text, extract_posting
 from app.schemas import IngestRequest, PostingExtraction
 from app.skills import extraction_to_create, get_or_create_skills 
 
@@ -78,3 +78,21 @@ def delete_posting(posting_id: int, session: Session = Depends(get_session)):
     session.delete(posting)
     session.commit()
     return {"ok": True}
+
+@app.put("/cv")
+def upsert_cv(file: UploadFile = File(...), session: Session = Depends(get_session)):
+    raw = file.file.read()                       # sync read
+    text = extract_cv_text(raw, file.content_type)
+    skills = extract_cv_skills(text)
+
+    cv = session.exec(select(CV)).first()        # singleton: first row or none
+    if cv is None:
+        cv = CV(original=text)
+        session.add(cv)
+    else:
+        cv.original = text                       # replace, don't append
+
+    get_or_create_skills(session, skills, in_stack=True)
+    session.commit()
+    session.refresh(cv)
+    return {"id": cv.id, "skills_added": skills}

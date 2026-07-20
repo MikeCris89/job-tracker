@@ -48,3 +48,14 @@ def test_extraction_maps_cleanly_to_create():
     source_only = {"posting_age", "posted_date_stated"}
     leftover = extraction_fields - create_fields - source_only
     assert leftover == set(), f"Unmapped PostingExtraction fields: {leftover}"
+
+def test_get_or_create_promotes_existing_to_stack(session):
+    get_or_create_skills(session, ["Kubernetes"])                 # in_stack defaults False
+    promoted = get_or_create_skills(session, ["Kubernetes"], in_stack=True)
+    assert promoted[0].in_my_stack is True
+
+
+def test_posting_does_not_demote_stack_skill(session):
+    get_or_create_skills(session, ["Rust"], in_stack=True)
+    result = get_or_create_skills(session, ["Rust"])              # in_stack False
+    assert result[0].in_my_stack is True

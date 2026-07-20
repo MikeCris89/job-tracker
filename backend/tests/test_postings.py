@@ -93,3 +93,4 @@ def test_create_posting_without_description(client):
 
     assert response.status_code == 200
     assert response.json()["description"] is None
+

@@ -14,7 +14,7 @@ def normalize_slug(raw: str):
     s = s.strip("-")                       # trim leading/trailing dashes
     return s
 
-def get_or_create_skills(session: Session, names: list[str]) -> list[Skill]:
+def get_or_create_skills(session: Session, names: list[str], *, in_stack: bool = False) -> list[Skill]:
     seen: dict[str, Skill] = {}
     for name in names:
         slug = normalize_slug(name)
@@ -22,9 +22,11 @@ def get_or_create_skills(session: Session, names: list[str]) -> list[Skill]:
             continue
         skill = session.exec(select(Skill).where(Skill.slug == slug)).first()
         if skill is None:
-            skill = Skill(slug=slug, name=name, in_my_stack=False)
+            skill = Skill(slug=slug, name=name, in_my_stack=in_stack)
             session.add(skill)
             session.flush()
+        elif in_stack and not skill.in_my_stack:
+            skill.in_my_stack = True
         seen[slug] = skill
     return list(seen.values())
 

@@ -2,6 +2,16 @@ from datetime import date
 
 from sqlmodel import SQLModel, Field
 
+SKILLS_DESCRIPTION = (
+    "Concrete technologies, languages, frameworks, and tools required or "
+    "mentioned. Not soft skills, not years of experience, not methodologies "
+    "like Agile. Write each one exactly as its own vendor or project writes "
+    "it: 'TypeScript', 'PostgreSQL', 'AWS', 'C#', '.NET', 'HTML'. Never "
+    "include version numbers: 'Next.js 15' -> 'Next.js', 'Python 3.12' -> "
+    "'Python'. If the "
+    "posting uses informal shorthand, correct it to the official name."
+)
+
 class PostingExtraction(SQLModel):
     # required, always present in a real posting
     company: str
@@ -86,16 +96,11 @@ class PostingExtraction(SQLModel):
     # not a column, handled separately on save
     skills: list[str] = Field(
         default=[],
-        description=(
-            "Concrete technologies, languages, frameworks, and tools required or "
-            "mentioned. Not soft skills, not years of experience, not methodologies "
-            "like Agile. Write each one exactly as its own vendor or project writes "
-            "it: 'TypeScript', 'PostgreSQL', 'AWS', 'C#', '.NET', 'HTML'. Never "
-            "include version numbers: 'Next.js 15' -> 'Next.js', 'Python 3.12' -> "
-            "'Python'. If the "
-            "posting uses informal shorthand, correct it to the official name."
-        ),
+        description=SKILLS_DESCRIPTION,
     )
 
 class IngestRequest(SQLModel):
     raw_posting: str
+
+class CVExtraction(SQLModel):
+    skills: list[str] = Field(description=SKILLS_DESCRIPTION)

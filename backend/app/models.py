@@ -98,3 +98,6 @@ class Skill(SQLModel, table=True):
         back_populates="skills", link_model=JobPostingSkillLink
     )
 
+class CV(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    original: str
