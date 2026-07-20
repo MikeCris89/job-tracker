@@ -2,7 +2,8 @@ import pytest
 from sqlmodel import select
 
 from app.skills import get_or_create_skills, normalize_slug
-from app.models import Skill
+from app.models import JobPostingCreate, Skill
+from app.schemas import PostingExtraction
 
 
 @pytest.mark.parametrize("raw, expected", [
@@ -40,3 +41,10 @@ def test_get_or_create_skills_persists_to_db(session):
     found = session.exec(select(Skill).where(Skill.slug == "rust")).first()
     assert found is not None
     assert found.name == "Rust"
+
+def test_extraction_maps_cleanly_to_create():
+    extraction_fields = set(PostingExtraction.model_fields)
+    create_fields = set(JobPostingCreate.model_fields)
+    source_only = {"posting_age", "posted_date_stated"}
+    leftover = extraction_fields - create_fields - source_only
+    assert leftover == set(), f"Unmapped PostingExtraction fields: {leftover}"

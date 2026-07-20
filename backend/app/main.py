@@ -6,7 +6,7 @@ from app.models import JobPosting, JobPostingCreate, JobPostingRead, JobPostingU
 from app.database import create_db_and_tables, get_session
 from app.ai import extract_posting
 from app.schemas import IngestRequest, PostingExtraction
-from app.skills import get_or_create_skills 
+from app.skills import extraction_to_create, get_or_create_skills 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -41,9 +41,10 @@ def create_posting(posting: JobPostingCreate, session: Session = Depends(get_ses
     session.refresh(db_posting)
     return db_posting
 
-@app.post('/postings/ingest', response_model=PostingExtraction)
+@app.post('/postings/ingest', response_model=JobPostingCreate)
 def ingest_posting(payload: IngestRequest):
-    return extract_posting(payload.raw_posting)
+    extraction = extract_posting(payload.raw_posting)
+    return extraction_to_create(extraction, payload.raw_posting)
 
 
 @app.patch("/postings/{posting_id}", response_model=JobPostingRead)

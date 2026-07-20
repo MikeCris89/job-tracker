@@ -1,8 +1,10 @@
+from datetime import date, timedelta
 import re
 
 from sqlmodel import Session, select
 
-from app.models import Skill
+from app.models import JobPostingCreate, Skill
+from app.schemas import PostingExtraction
 
 def normalize_slug(raw: str):
     s = raw.lower().strip()
@@ -25,3 +27,18 @@ def get_or_create_skills(session: Session, names: list[str]) -> list[Skill]:
             session.flush()
         seen[slug] = skill
     return list(seen.values())
+
+def _resolve_posted_date(extraction: PostingExtraction) -> date | None:
+    if extraction.posted_date_stated is not None:
+        return extraction.posted_date_stated
+    if extraction.posting_age is not None:
+        return date.today() - timedelta(days=extraction.posting_age)
+    return None
+
+
+
+def extraction_to_create(extraction: PostingExtraction, raw: str) -> JobPostingCreate:
+    data = extraction.model_dump(exclude={"posting_age", "posted_date_stated"})
+    data["posting_date"] = _resolve_posted_date(extraction)
+    data["raw_posting"] = raw
+    return JobPostingCreate(**data)
