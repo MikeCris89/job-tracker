@@ -60,6 +60,7 @@ class JobPostingUpdate(SQLModel):
     salary_period: str | None = None
     raw_posting: str | None = None
     summary: str | None = None
+    skills: list[str] | None = None
 
 
 # The table: base + the DB-only fields
