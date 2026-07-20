@@ -1,5 +1,4 @@
 from datetime import date, datetime, timezone
-from pydantic import ConfigDict
 from sqlmodel import Relationship, SQLModel, Field
 
 class JobPostingSkillLink(SQLModel, table=True):
@@ -75,7 +74,6 @@ class JobPosting(JobPostingBase, table=True):
 
 # Input shape: just the base, nothing added
 class JobPostingCreate(JobPostingBase):
-    model_config = ConfigDict(extra="forbid")  # SQLModel ignores the class kwarg; set on config
     skills: list[str] = []
 
 class SkillRead(SQLModel):
