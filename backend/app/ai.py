@@ -47,6 +47,7 @@ def extract_posting(raw_posting: str) -> PostingExtraction:
     message = client.messages.create(
         model="claude-sonnet-4-6",
         max_tokens=2000,
+        temperature=0,
         system=POSTING_SYSTEM_PROMPT,
         tools=[EXTRACTION_TOOL],
         tool_choice={"type": "tool", "name": "record_posting"},
@@ -67,6 +68,7 @@ def extract_cv_text(raw: bytes, content_type: str | None) -> str:
         message = client.messages.create(
             model="claude-sonnet-4-6",
             max_tokens=4000,
+            temperature=0,
             messages=[{
                 "role": "user",
                 "content": [
@@ -92,7 +94,8 @@ def extract_cv_skills(cv: str) -> list[str]:
     message = client.messages.create(
         model="claude-sonnet-4-6",
         max_tokens=4000,
-        system=CV_SYSTEM_PROMPT,          # your existing global one
+        temperature=0,
+        system=CV_SYSTEM_PROMPT,
         tools=[CV_TOOL],
         tool_choice={"type": "tool", "name": "record_cv_skills"},
         messages=[{"role": "user", "content": cv}],

@@ -3,13 +3,19 @@ from datetime import date
 from sqlmodel import SQLModel, Field
 
 SKILLS_DESCRIPTION = (
-    "Concrete technologies, languages, frameworks, and tools required or "
-    "mentioned. Not soft skills, not years of experience, not methodologies "
-    "like Agile. Write each one exactly as its own vendor or project writes "
-    "it: 'TypeScript', 'PostgreSQL', 'AWS', 'C#', '.NET', 'HTML'. Never "
-    "include version numbers: 'Next.js 15' -> 'Next.js', 'Python 3.12' -> "
-    "'Python'. If the "
-    "posting uses informal shorthand, correct it to the official name."
+    "Concrete technologies, languages, frameworks, libraries, and tools. "
+    "Not soft skills, not years of experience, not methodologies like Agile. "
+    "Include every technology named in the text, including distinct sub-services "
+    "of a larger platform (e.g. 'Firebase Cloud Messaging', 'AWS S3'); when in "
+    "doubt, include it. "
+    "Write each one using its canonical product name, exactly as its vendor or "
+    "project brands it: 'TypeScript', 'PostgreSQL', 'AWS', 'C#', '.NET', 'HTML'. "
+    "Correct informal shorthand to that name ('TS' -> 'TypeScript', 'postgres' "
+    "-> 'PostgreSQL'). Strip descriptive category words that are not part of the "
+    "brand name: 'Prisma ORM' -> 'Prisma', 'Express.js framework' -> 'Express'. "
+    "But keep branded sub-service names whole: 'Firebase Storage' stays "
+    "'Firebase Storage', not 'Firebase'. Never include version numbers: "
+    "'Next.js 15' -> 'Next.js', 'Python 3.12' -> 'Python'."
 )
 
 class PostingExtraction(SQLModel):
