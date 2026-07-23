@@ -8,10 +8,25 @@ from app.ai import extract_cv_skills, extract_cv_text, extract_posting
 from app.schemas import IngestRequest, PostingExtraction
 from app.skills import extraction_to_create, get_or_create_skills 
 
-@asynccontextmanager
+# app/main.py
+
+@asynccontextmanager  # turns this generator into an async context manager,
+                      # so FastAPI can run it as `async with lifespan(app):`
+                      # (same setup/teardown pattern as `with Session(...)` in get_session)
 async def lifespan(app: FastAPI):
-    create_db_and_tables()
-    yield
+    # --- STARTUP ---
+    # Everything ABOVE the yield runs ONCE, when the app process boots,
+    # before a single request is served. In dev (fastapi dev) this re-runs
+    # on every file-save reload, because each reload is a fresh process.
+    # create_db_and_tables()  # ensures tables exist. NOTE: being retired —
+                            # Alembic owns the schema now, so this becomes a no-op we remove.
+
+    yield  # hands control to the app. It serves requests for its whole
+           # lifetime here. Execution pauses on this line until shutdown.
+
+    # --- SHUTDOWN ---
+    # Everything BELOW the yield runs ONCE, when the app is stopping.
+    # Cleanup goes here (close pools, flush caches, etc). Empty for now.
 
 app = FastAPI(lifespan=lifespan)
 
