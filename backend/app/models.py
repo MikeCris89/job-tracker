@@ -26,6 +26,8 @@ class JobPostingBase(SQLModel):
     application_instructions: str | None = None
     notes: str | None = None
     match_score: int | None = None
+    match_reasoning: str | None = None           #  AI-written fit explanation
+    match_scored_at: datetime | None = None      #  (for stale detection later)
     salary_min: int | None = None
     salary_max: int | None = None
     salary_currency: str | None = None
@@ -53,7 +55,6 @@ class JobPostingUpdate(SQLModel):
     contact: str | None = None
     application_instructions: str | None = None
     notes: str | None = None
-    match_score: int | None = None
     salary_min: int | None = None
     salary_max: int | None = None
     salary_currency: str | None = None

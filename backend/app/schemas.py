@@ -110,3 +110,23 @@ class IngestRequest(SQLModel):
 
 class CVExtraction(SQLModel):
     skills: list[str] = Field(description=SKILLS_DESCRIPTION)
+
+class MatchExtraction(SQLModel):
+    match_score: int = Field(
+        description=(
+            "0-100. How well this candidate fits this specific posting. "
+            "Weigh overlap between the candidate's actual demonstrated experience "
+            "and what the posting requires. Treat a missing must-have requirement as "
+            "a significant penalty; treat a missing nice-to-have as minor. "
+            "Do not inflate: a score above 80 means the candidate is a strong, "
+            "credible applicant for this exact role."
+        )
+    )
+    match_reasoning: str = Field(
+        description=(
+            "2-4 sentences explaining the score. State the strongest points of "
+            "alignment and the specific gaps that cost points. Reference concrete "
+            "technologies and requirements, not generalities. Write it as advice to "
+            "the candidate, not a description of them."
+        )
+    )

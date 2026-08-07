@@ -1,14 +1,13 @@
 from contextlib import asynccontextmanager
+from datetime import datetime, timezone
 from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
 from sqlmodel import Session, select
 
-from app.models import CV, JobPosting, JobPostingCreate, JobPostingRead, JobPostingUpdate 
-from app.database import create_db_and_tables, get_session
-from app.ai import extract_cv_skills, extract_cv_text, extract_posting
-from app.schemas import IngestRequest, PostingExtraction
-from app.skills import extraction_to_create, get_or_create_skills 
-
-# app/main.py
+from app.models import CV, JobPosting, JobPostingCreate, JobPostingRead, JobPostingUpdate, Skill 
+from app.database import get_session
+from app.ai import extract_cv_skills, extract_cv_text, extract_posting, score_match
+from app.schemas import IngestRequest
+from app.skills import extraction_to_create, get_or_create_skills, posting_to_text 
 
 @asynccontextmanager  # turns this generator into an async context manager,
                       # so FastAPI can run it as `async with lifespan(app):`
@@ -111,3 +110,27 @@ def upsert_cv(file: UploadFile = File(...), session: Session = Depends(get_sessi
     session.commit()
     session.refresh(cv)
     return {"id": cv.id, "skills_added": skills}
+
+@app.post("/postings/{posting_id}/match")
+def match_posting(posting_id: int, session: Session = Depends(get_session)):
+    posting = session.get(JobPosting, posting_id)
+    if posting is None:
+        raise HTTPException(status_code=404, detail="Posting not found")
+
+    cv = session.exec(select(CV)).first()
+    if cv is None:
+        raise HTTPException(status_code=400, detail="No CV uploaded")
+    
+    skills = session.exec(select(Skill).where(Skill.in_my_stack == True)).all()
+
+    result = score_match(cv.original, [s.name for s in skills], posting_to_text(posting))
+
+    posting.match_score = result.match_score
+    posting.match_reasoning = result.match_reasoning
+    posting.match_scored_at = datetime.now(timezone.utc)
+
+    session.add(posting)
+    session.commit()
+    session.refresh(posting)
+
+    return posting

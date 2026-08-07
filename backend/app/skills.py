@@ -3,7 +3,7 @@ import re
 
 from sqlmodel import Session, select
 
-from app.models import JobPostingCreate, Skill
+from app.models import JobPosting, JobPostingCreate, Skill
 from app.schemas import PostingExtraction
 
 def normalize_slug(raw: str):
@@ -44,3 +44,19 @@ def extraction_to_create(extraction: PostingExtraction, raw: str) -> JobPostingC
     data["posting_date"] = _resolve_posted_date(extraction)
     data["raw_posting"] = raw
     return JobPostingCreate(**data)
+
+def posting_to_text(posting: JobPosting) -> str:
+    parts = [
+        f"Role: {posting.role}",
+        f"Company: {posting.company}",
+    ]
+    # only include fields that exist — empty labels are noise the model has to ignore
+    if posting.role_category:
+        parts.append(f"Category: {posting.role_category}")
+    if posting.years_experience is not None:
+        parts.append(f"Years experience required: {posting.years_experience}")
+    if posting.work_mode:
+        parts.append(f"Work mode: {posting.work_mode}")
+    if posting.summary:
+        parts.append(f"\n{posting.summary}")
+    return "\n".join(parts)
